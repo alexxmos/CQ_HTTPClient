@@ -55,7 +55,7 @@ public:
         return std::unique_ptr<WiFiClient>(new WiFiClient());
     }
 
-    virtual bool verify(WiFiClient& client, const char* host)
+    virtual bool verify(Client& client, const char* host)
     {
         return true;
     }
@@ -74,7 +74,7 @@ public:
         return std::unique_ptr<WiFiClient>(new WiFiClientSecure());
     }
 
-    bool verify(WiFiClient& client, const char* host) override
+    bool verify(Client& client, const char* host) override
     {
         WiFiClientSecure& wcs = static_cast<WiFiClientSecure&>(client);
         if (_cacert == nullptr) {
