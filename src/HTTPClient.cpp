@@ -112,12 +112,15 @@ HTTPClient::~HTTPClient()
     if(_currentHeaders) {
         delete[] _currentHeaders;
     }
+    
+#ifdef HTTPCLIENT_1_1_COMPATIBLE
     if(_tcpDeprecated) {
         _tcpDeprecated.reset(nullptr);
     }
     if(_transportTraits) {
         _transportTraits.reset(nullptr);
     }
+#endif
 }
 
 void HTTPClient::clear()
@@ -135,7 +138,7 @@ void HTTPClient::clear()
  * @param https bool
  * @return success bool
  */
-bool HTTPClient::begin(WiFiClient &client, String url) {
+bool HTTPClient::begin(Client &client, String url) {
 #ifdef HTTPCLIENT_1_1_COMPATIBLE
     if(_tcpDeprecated) {
         log_d("mix up of new and deprecated api");
@@ -174,7 +177,7 @@ bool HTTPClient::begin(WiFiClient &client, String url) {
  * @param https bool
  * @return success bool
  */
-bool HTTPClient::begin(WiFiClient &client, String host, uint16_t port, String uri, bool https)
+bool HTTPClient::begin(Client &client, String host, uint16_t port, String uri, bool https)
 {
 #ifdef HTTPCLIENT_1_1_COMPATIBLE
     if(_tcpDeprecated) {
@@ -848,9 +851,9 @@ int HTTPClient::getSize(void)
 
 /**
  * returns the stream of the tcp connection
- * @return WiFiClient
+ * @return Client
  */
-WiFiClient& HTTPClient::getStream(void)
+Client& HTTPClient::getStream(void)
 {
     if (connected()) {
         return *_client;
@@ -863,9 +866,9 @@ WiFiClient& HTTPClient::getStream(void)
 
 /**
  * returns a pointer to the stream of the tcp connection
- * @return WiFiClient*
+ * @return Client*
  */
-WiFiClient* HTTPClient::getStreamPtr(void)
+Client* HTTPClient::getStreamPtr(void)
 {
     if(connected()) {
         return _client;
@@ -1145,12 +1148,13 @@ bool HTTPClient::connect(void)
         return false;
     }	
 #endif
-    if(!_client->connect(_host.c_str(), _port, _connectTimeout)) {
+    // if(!_client->connect(_host.c_str(), _port, _connectTimeout)) {
+    if(!_client->connect(_host.c_str(), _port)) {
         log_d("failed connect to %s:%u", _host.c_str(), _port);
         return false;
     }
 
-    // set Timeout for WiFiClient and for Stream::readBytesUntil() and Stream::readStringUntil()
+    // set Timeout for Client and for Stream::readBytesUntil() and Stream::readStringUntil()
     _client->setTimeout((_tcpTimeout + 500) / 1000);	
 
     log_d(" connected to %s:%u", _host.c_str(), _port);
@@ -1195,7 +1199,9 @@ bool HTTPClient::sendHeader(const char * type)
     if(_reuse) {
         header += F("keep-alive");
     } else {
-        header += F("close");
+        header += F("keep-alive");
+        // Setting this breaks the connection
+        // header += F("close");
     }
     header += "\r\n";
 

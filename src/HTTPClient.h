@@ -33,12 +33,14 @@
 
 #include <memory>
 #include <Arduino.h>
-#include <WiFiClient.h>
-#include <WiFiClientSecure.h>
+// #include <WiFiClient.h>
+// #include <WiFiClientSecure.h>
+#include <Client.h>
 
 /// Cookie jar support
 #include <vector>
 
+// TODO need increasing to 15000?
 #define HTTPCLIENT_DEFAULT_TCP_TIMEOUT (5000)
 
 /// HTTP client errors
@@ -179,8 +181,12 @@ public:
  * Since both begin() functions take a reference to client as a parameter, you need to 
  * ensure the client object lives the entire time of the HTTPClient
  */
-    bool begin(WiFiClient &client, String url);
-    bool begin(WiFiClient &client, String host, uint16_t port, String uri = "/", bool https = false);
+    // bool begin(WiFiClient &client, String url);
+    // bool begin(WiFiClient &client, String host, uint16_t port, String uri = "/", bool https = false);
+
+/* Add methods that accept a generic Client */
+    bool begin(Client &client, String url);
+    bool begin(Client &client, String host, uint16_t port, String uri = "/", bool https = false);
 
 #ifdef HTTPCLIENT_1_1_COMPATIBLE
     bool begin(String url);
@@ -235,8 +241,11 @@ public:
     int getSize(void);
     const String &getLocation(void);
 
-    WiFiClient& getStream(void);
-    WiFiClient* getStreamPtr(void);
+    // WiFiClient& getStream(void);
+    // WiFiClient* getStreamPtr(void);
+    /* Add methods to return the generic client */
+    Client& getStream(void);
+    Client* getStreamPtr(void);
     int writeToStream(Stream* stream);
     String getString(void);
 
@@ -268,10 +277,12 @@ protected:
 
 #ifdef HTTPCLIENT_1_1_COMPATIBLE
     TransportTraitsPtr _transportTraits;
-    std::unique_ptr<WiFiClient> _tcpDeprecated;
+    // std::unique_ptr<WiFiClient> _tcpDeprecated;
+    std::unique_ptr<Client> _tcpDeprecated;
 #endif
 
-    WiFiClient* _client = nullptr;
+    // WiFiClient* _client = nullptr;
+    Client* _client = nullptr;
 
     /// request handling
     String _host;
