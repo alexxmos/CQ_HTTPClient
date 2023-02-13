@@ -41,7 +41,7 @@
 #include <vector>
 
 // TODO need increasing to 15000?
-#define HTTPCLIENT_DEFAULT_TCP_TIMEOUT (5000)
+#define HTTPCLIENT_DEFAULT_TCP_TIMEOUT (30000)
 
 /// HTTP client errors
 #define HTTPC_ERROR_CONNECTION_REFUSED  (-1)
